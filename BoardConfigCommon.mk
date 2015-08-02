@@ -92,6 +92,7 @@ BOARD_SEPOLICY_DIRS += \
 
 BOARD_SEPOLICY_UNION += \
     akmd.te \
+    radio.te \
     cir_fw_update.te
 
 # USB
