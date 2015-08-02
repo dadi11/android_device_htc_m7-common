@@ -93,6 +93,7 @@ BOARD_SEPOLICY_DIRS += \
 BOARD_SEPOLICY_UNION += \
     akmd.te \
     radio.te \
+    tap2wake_dev.te \
     cir_fw_update.te
 
 # USB

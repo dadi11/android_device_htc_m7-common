@@ -21,6 +21,7 @@
 
 # CMHW
 /sys/devices/virtual/timed_output/vibrator/voltage_level   u:object_r:vibeamp_sysfs:s0
+/sys/devices/virtual/htc_sensorhub/sensor_hub/tap2wake	 u:object_r:tap2wake_dev:s0
 
 # Modem
 /dev/block/mmcblk0p17           u:object_r:modem_efs_partition_device:s0
