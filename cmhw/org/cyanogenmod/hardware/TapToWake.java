@@ -21,15 +21,14 @@ import org.cyanogenmod.hardware.util.FileUtils;
 
 public class TapToWake {
 
-    private static final String CONTROL_PATH = "/sys/devices/virtual/htc_sensorhub/sensor_hub/tap2wake";
+    private static final String CONTROL_PATH = "/sys/android_touch/tap_to_wake";
 
     public static boolean isSupported() {
-        File f = new File(CONTROL_PATH);
-        return f.exists();
+        return true;
     }
 
     public static boolean isEnabled()  {
-        return Integer.parseInt(FileUtils.readOneLine(CONTROL_PATH)) == 1;
+        return "1".equals(FileUtils.readOneLine(CONTROL_PATH));
     }
 
     public static boolean setEnabled(boolean state)  {
