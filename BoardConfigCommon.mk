@@ -46,6 +46,12 @@ BOARD_USES_SEPERATED_FM := true # use distinct fm use cases
 BOARD_USES_SEPERATED_VOICE_SPEAKER := true  # use distinct voice speaker use case
 BOARD_USES_SEPERATED_VOIP := true  # use distinct VOIP use cases
 BOARD_HAVE_HTC_CSDCLIENT := true
+BOARD_USES_FLUENCE_INCALL := true
+BOARD_USES_LEGACY_ALSA_AUDIO := true
+BOARD_USES_SEPERATED_AUDIO_INPUT := true
+BOARD_USES_SEPERATED_FM := true
+BOARD_USES_SEPERATED_VOICE_SPEAKER := true
+BOARD_USES_SEPERATED_VOIP := true
 
 # Bluetooth
 BOARD_BLUEDROID_VENDOR_CONF := $(LOCAL_PATH)/bluetooth/libbt_vndcfg.txt
