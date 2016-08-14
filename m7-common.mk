@@ -71,8 +71,8 @@ PRODUCT_COPY_FILES += \
 
 # Camera
 PRODUCT_PACKAGES += \
-    camera.msm8960
-
+    camera.msm8960 \
+    Snap
 # GPS
 PRODUCT_PACKAGES += \
     gps.msm8960

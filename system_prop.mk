@@ -1,7 +1,7 @@
 # Camera
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.cam.hw.version=m7
-
+    persist.camera.longshot.enable=true
 # Display
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=196608 \
