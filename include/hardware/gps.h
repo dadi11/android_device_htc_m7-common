@@ -44,6 +44,8 @@ typedef int64_t GpsUtcTime;
 
 /** Maximum number of Measurements in gps_measurement_callback(). */
 #define GPS_MAX_MEASUREMENT   32
+/** Maximum number of Measurements in gnss_measurement_callback(). */
+#define GNSS_MAX_MEASUREMENT   64
 
 /** Maximum number of Measurements in gnss_measurement_callback(). */
 #define GNSS_MAX_MEASUREMENT   64
@@ -289,6 +291,25 @@ typedef uint16_t GnssClockFlags;
 /** A valid 'drift uncertainty' is stored in the data structure. */
 #define GNSS_CLOCK_HAS_DRIFT_UNCERTAINTY         (1<<6)
 
+/**
+ * Flags to indicate what fields in GnssClock are valid.
+ */
+typedef uint16_t GnssClockFlags;
+/** A valid 'leap second' is stored in the data structure. */
+#define GNSS_CLOCK_HAS_LEAP_SECOND               (1<<0)
+/** A valid 'time uncertainty' is stored in the data structure. */
+#define GNSS_CLOCK_HAS_TIME_UNCERTAINTY          (1<<1)
+/** A valid 'full bias' is stored in the data structure. */
+#define GNSS_CLOCK_HAS_FULL_BIAS                 (1<<2)
+/** A valid 'bias' is stored in the data structure. */
+#define GNSS_CLOCK_HAS_BIAS                      (1<<3)
+/** A valid 'bias uncertainty' is stored in the data structure. */
+#define GNSS_CLOCK_HAS_BIAS_UNCERTAINTY          (1<<4)
+/** A valid 'drift' is stored in the data structure. */
+#define GNSS_CLOCK_HAS_DRIFT                     (1<<5)
+/** A valid 'drift uncertainty' is stored in the data structure. */
+#define GNSS_CLOCK_HAS_DRIFT_UNCERTAINTY         (1<<6)
+
 /* The following typedef together with its constants below are deprecated, and
  * will be removed in the next release. */
 typedef uint8_t GpsClockType;
@@ -402,6 +423,37 @@ typedef uint32_t GnssMeasurementState;
 #define GNSS_MEASUREMENT_STATE_GAL_E1B_PAGE_SYNC     (1<<12)
 #define GNSS_MEASUREMENT_STATE_SBAS_SYNC             (1<<13)
 
+/**
+ * Flags indicating the GNSS measurement state.
+ *
+ * The expected behavior here is for GPS HAL to set all the flags that applies.
+ * For example, if the state for a satellite is only C/A code locked and bit
+ * synchronized, and there is still millisecond ambiguity, the state should be
+ * set as:
+ *
+ * GNSS_MEASUREMENT_STATE_CODE_LOCK | GNSS_MEASUREMENT_STATE_BIT_SYNC |
+ *         GNSS_MEASUREMENT_STATE_MSEC_AMBIGUOUS
+ *
+ * If GNSS is still searching for a satellite, the corresponding state should be
+ * set to GNSS_MEASUREMENT_STATE_UNKNOWN(0).
+ */
+typedef uint32_t GnssMeasurementState;
+#define GNSS_MEASUREMENT_STATE_UNKNOWN                   0
+#define GNSS_MEASUREMENT_STATE_CODE_LOCK             (1<<0)
+#define GNSS_MEASUREMENT_STATE_BIT_SYNC              (1<<1)
+#define GNSS_MEASUREMENT_STATE_SUBFRAME_SYNC         (1<<2)
+#define GNSS_MEASUREMENT_STATE_TOW_DECODED           (1<<3)
+#define GNSS_MEASUREMENT_STATE_MSEC_AMBIGUOUS        (1<<4)
+#define GNSS_MEASUREMENT_STATE_SYMBOL_SYNC           (1<<5)
+#define GNSS_MEASUREMENT_STATE_GLO_STRING_SYNC       (1<<6)
+#define GNSS_MEASUREMENT_STATE_GLO_TOD_DECODED       (1<<7)
+#define GNSS_MEASUREMENT_STATE_BDS_D2_BIT_SYNC       (1<<8)
+#define GNSS_MEASUREMENT_STATE_BDS_D2_SUBFRAME_SYNC  (1<<9)
+#define GNSS_MEASUREMENT_STATE_GAL_E1BC_CODE_LOCK    (1<<10)
+#define GNSS_MEASUREMENT_STATE_GAL_E1C_2ND_CODE_LOCK (1<<11)
+#define GNSS_MEASUREMENT_STATE_GAL_E1B_PAGE_SYNC     (1<<12)
+#define GNSS_MEASUREMENT_STATE_SBAS_SYNC             (1<<13)
+
 /* The following typedef together with its constants below are deprecated, and
  * will be removed in the next release. */
 typedef uint16_t GpsAccumulatedDeltaRangeState;
@@ -412,6 +464,15 @@ typedef uint16_t GpsAccumulatedDeltaRangeState;
 
 /**
  * Flags indicating the Accumulated Delta Range's states.
+ */
+typedef uint16_t GnssAccumulatedDeltaRangeState;
+#define GNSS_ADR_STATE_UNKNOWN                       0
+#define GNSS_ADR_STATE_VALID                     (1<<0)
+#define GNSS_ADR_STATE_RESET                     (1<<1)
+#define GNSS_ADR_STATE_CYCLE_SLIP                (1<<2)
+
+/**
+ * Enumeration of available values to indicate the available GPS Natigation message types.
  */
 typedef uint16_t GnssAccumulatedDeltaRangeState;
 #define GNSS_ADR_STATE_UNKNOWN                       0
@@ -545,7 +606,6 @@ typedef uint8_t                         GnssConstellationType;
  */
 #define GNSS_CONFIGURATION_INTERFACE     "gnss_configuration"
 
-
 /** Represents a location. */
 typedef struct {
     /** set to sizeof(GpsLocation) */
@@ -593,6 +653,8 @@ typedef struct {
     float   elevation;
     /** Azimuth of SV in degrees. */
     float   azimuth;
+    /** Needed by vendor blob */
+    int used;
 } GpsSvInfo;
 
 typedef struct {
@@ -735,9 +797,8 @@ typedef void (* gps_sv_status_callback)(GpsSvStatus* sv_info);
  */
 typedef void (* gnss_sv_status_callback)(GnssSvStatus* sv_info);
 
-/**
- * Callback for reporting NMEA sentences. Can only be called from a thread
- * created by create_thread_cb.
+/** Callback for reporting NMEA sentences.
+ *  Can only be called from a thread created by create_thread_cb.
  */
 typedef void (* gps_nmea_callback)(GpsUtcTime timestamp, const char* nmea, int length);
 
@@ -902,9 +963,7 @@ typedef struct {
     size_t (*get_internal_state)(char* buffer, size_t bufferSize);
 } GpsDebugInterface;
 
-/*
- * Represents the status of AGPS augmented to support IPv4 and IPv6.
- */
+/* Represents the status of AGPS augmented to support IPv4 and IPv6. */
 typedef struct {
     /** set to sizeof(AGpsStatus_v3) */
     size_t                  size;
@@ -942,6 +1001,7 @@ typedef struct {
     agps_status_callback status_cb;
     gps_create_thread create_thread_cb;
 } AGpsCallbacks;
+
 
 /**
  * Extended interface for AGPS support, it is augmented to enable to pass
@@ -1939,19 +1999,26 @@ typedef struct {
 } GnssMeasurement;
 
 /**
- * Legacy struct to represents a reading of GPS measurements.
- * Deprecated, to be removed in the next Android release.
- * Use GnssData instead.
+ * Represents a reading of GNSS measurements. For devices where GnssSystemInfo's
+ * year_of_hw is set to 2016+, it is mandatory that these be provided, on
+ * request, when the GNSS receiver is searching/tracking signals.
+ *
+ * - Reporting of GPS constellation measurements is mandatory.
+ * - Reporting of all tracked constellations are encouraged.
  */
 typedef struct {
-    /** set to sizeof(GpsData) */
+    /** set to sizeof(GnssData) */
     size_t size;
+
+    /** Number of measurements. */
     size_t measurement_count;
-    GpsMeasurement measurements[GPS_MAX_MEASUREMENT];
+
+    /** The array of measurements. */
+    GnssMeasurement measurements[GNSS_MAX_MEASUREMENT];
 
     /** The GPS clock time reading. */
-    GpsClock clock;
-} GpsData;
+    GnssClock clock;
+} GnssData;
 
 /**
  * Represents a reading of GNSS measurements. For devices where GnssSystemInfo's
