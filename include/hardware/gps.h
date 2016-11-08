@@ -56,6 +56,9 @@ typedef int64_t GpsUtcTime;
 /** Maximum number of Measurements in gnss_measurement_callback(). */
 #define GNSS_MAX_MEASUREMENT   64
 
+/** Maximum number of Measurements in gnss_measurement_callback(). */
+#define GNSS_MAX_MEASUREMENT   64
+
 /** Requested operational mode for GPS operation. */
 typedef uint32_t GpsPositionMode;
 /* IMPORTANT: Note that the following values must match
