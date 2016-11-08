@@ -53,6 +53,9 @@ typedef int64_t GpsUtcTime;
 /** Maximum number of Measurements in gnss_measurement_callback(). */
 #define GNSS_MAX_MEASUREMENT   64
 
+/** Maximum number of Measurements in gnss_measurement_callback(). */
+#define GNSS_MAX_MEASUREMENT   64
+
 /** Requested operational mode for GPS operation. */
 typedef uint32_t GpsPositionMode;
 /* IMPORTANT: Note that the following values must match
@@ -697,6 +700,10 @@ typedef struct {
     uint16_t tac;
     /** Physical Cell id in LTE (not used in 2G and 3G) */
     uint16_t pcid;
+#if 1
+    /** Placeholder for Samsung ABI compat */
+    uint16_t unknown;
+#endif
 } AGpsRefLocationCellID;
 
 typedef struct {
