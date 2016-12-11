@@ -308,6 +308,13 @@ on boot
     # Wake on volume
     write /sys/keyboard/vol_wakeup 1
 
+# Set shared touchpanel nodes ownership (these are proc_symlinks to the real sysfs nodes)
+    chown system system /proc/touchpanel
+
+# KeyDisabler
+    chown root system /sys/android_touch/keypad_enable
+    chmod 0660 /sys/android_touch/keypad_enable
+
 # Services begin here
 
 service akmd /system/bin/akmd
