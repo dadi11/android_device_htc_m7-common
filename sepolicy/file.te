@@ -6,3 +6,4 @@ type l2m_2_phase_sysfs, fs_type, sysfs_type;
 type home2wake_sysfs, fs_type, sysfs_type;
 type sweep2wake_sysfs, fs_type, sysfs_type;
 type logo2menu_sysfs, fs_type, sysfs_type;
+type proc_touchpanel, fs_type;
